@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String data = "f";
                 write(data.getBytes());
-
             }
         });
         btnDerecha.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String data = "d";
                 write(data.getBytes());
-
             }
         });
         btnIzquierda.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String data = "i";
                 write(data.getBytes());
-
             }
         });
         btnRetroceder.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     public void write(byte[] bytes) {
         OutputStream tmpOut;
         try {
@@ -147,5 +144,4 @@ public class MainActivity extends AppCompatActivity {
         btnIzquierda.setVisibility(View.VISIBLE);
         btnRetroceder.setVisibility(View.VISIBLE);
     }
-
 }
