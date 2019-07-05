@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -94,22 +95,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void empezarHiloParaConectar(BluetoothDevice device) {
-
         bluetoothAdapter.cancelDiscovery();
         BluetoothSocket socket = getSocket(device);
+        boolean connected = isConnected(socket);
+        empezarHiloConectado(socket, connected);
+    }
+
+    private boolean isConnected(BluetoothSocket socket) {
+        boolean connected = true;
         try {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
             socket.connect();
-            mostrarTodo();
-            empezarHiloConectado(socket);
         } catch (IOException connectException) {
+            connected = false;
             try {
                 socket.close();
             } catch (IOException closeException) {
             }
-            return;
         }
+        return connected;
     }
 
     public BluetoothSocket getSocket(BluetoothDevice device) {
@@ -121,11 +126,12 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
-    
 
-    public void empezarHiloConectado(BluetoothSocket socket) {
+
+    public void empezarHiloConectado(BluetoothSocket socket, boolean connected) {
         connectedThread = new ConnectedThread(socket);
         connectedThread.run();
+        if (connected) mostrarTodo();
     }
 
     public void mostrarTodo() {
