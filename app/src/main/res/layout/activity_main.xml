@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:text="Dispositivos Disponibles" />
+
+    <ListView
+        android:id="@+id/lista_dispositivos"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/idBtnIzquierda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Izquierda"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/idBtnDerecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Derecha"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/idBtnAvanzar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Avanzar"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/idBtnRetroceder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Retroceder"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+
+</RelativeLayout>

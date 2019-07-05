@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CarArduino</string>
+    <string name="title_activity_control">ControlActivity</string>
+</resources>
