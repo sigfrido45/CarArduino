@@ -96,8 +96,23 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "No hay ningun dispositivo encontrado", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void empezarHiloParaConectar(BluetoothDevice device) {
-        connectThread = new ConnectThread(device, bluetoothAdapter);
-        connectThread.run();
+
+
+
     }
+
+    public void setConnectedThread(ConnectedThread connectedThread) {
+        this.connectedThread = connectedThread;
+    }
+
+    public void mostrarTodo() {
+        lista.setVisibility(View.INVISIBLE);
+        btnAvanzar.setVisibility(View.VISIBLE);
+        btnDerecha.setVisibility(View.VISIBLE);
+        btnIzquierda.setVisibility(View.VISIBLE);
+        btnRetroceder.setVisibility(View.VISIBLE);
+    }
+
 }
