@@ -10,15 +10,13 @@ public class ConnectThread {
     private final BluetoothSocket mmSocket;
     private final BluetoothDevice mmDevice;
     private final BluetoothAdapter mBluetoothAdapter;
-    private MainActivity activity;
 
-    public ConnectThread(BluetoothDevice device, BluetoothAdapter bluetoothAdapter, MainActivity mainActivity) {
+    public ConnectThread(BluetoothDevice device, BluetoothAdapter bluetoothAdapter) {
         // Use a temporary object that is later assigned to mmSocket,
         // because mmSocket is final
         BluetoothSocket tmp = null;
         mmDevice = device;
         this.mBluetoothAdapter = bluetoothAdapter;
-        activity = mainActivity;
         // Get a BluetoothSocket to connect with the given BluetoothDevice
         try {
             // MY_UUID is the app's UUID string, also used by the server code
@@ -47,8 +45,6 @@ public class ConnectThread {
         // Do work to manage the connection (in a separate thread)
         ConnectedThread connectedThread = new ConnectedThread(mmSocket);
         connectedThread.run();
-        activity.setConnectedThread(connectedThread);
-        activity.mostrarTodo();
     }
 
     /**

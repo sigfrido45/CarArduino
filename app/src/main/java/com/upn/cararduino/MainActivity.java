@@ -13,12 +13,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.upn.cararduino.threads.ConnectThread;
 import com.upn.cararduino.threads.ConnectedThread;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     public ArrayAdapter<String> dispositivos;
     public ListView lista;
     public ConnectedThread connectedThread;
-    public ConnectThread connectThread;
     public static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private Button btnAvanzar;
@@ -99,12 +95,37 @@ public class MainActivity extends AppCompatActivity {
 
     private void empezarHiloParaConectar(BluetoothDevice device) {
 
-
-
+        bluetoothAdapter.cancelDiscovery();
+        BluetoothSocket socket = getSocket(device);
+        try {
+            // Connect the device through the socket. This will block
+            // until it succeeds or throws an exception
+            socket.connect();
+            mostrarTodo();
+            empezarHiloConectado(socket);
+        } catch (IOException connectException) {
+            try {
+                socket.close();
+            } catch (IOException closeException) {
+            }
+            return;
+        }
     }
 
-    public void setConnectedThread(ConnectedThread connectedThread) {
-        this.connectedThread = connectedThread;
+    public BluetoothSocket getSocket(BluetoothDevice device) {
+        try {
+            // MY_UUID is the app's UUID string, also used by the server code
+            BluetoothSocket mmSocket = device.createRfcommSocketToServiceRecord(MainActivity.BTMODULEUUID);
+            return mmSocket;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+    
+
+    public void empezarHiloConectado(BluetoothSocket socket) {
+        connectedThread = new ConnectedThread(socket);
+        connectedThread.run();
     }
 
     public void mostrarTodo() {
