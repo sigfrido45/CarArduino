@@ -1,10 +1,11 @@
 package com.upn.cararduino;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.os.Bundle;;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,9 +13,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.upn.cararduino.threads.ConnectedThread;
-
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,13 +22,13 @@ public class MainActivity extends AppCompatActivity {
     public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public ArrayAdapter<String> dispositivos;
     public ListView lista;
-    public ConnectedThread connectedThread;
     public static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private Button btnAvanzar;
     private Button btnRetroceder;
     private Button btnIzquierda;
     private Button btnDerecha;
+    private BluetoothSocket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String data = "f";
-                connectedThread.write(data.getBytes());
-                connectedThread.write(data.getBytes());
+                write(data.getBytes());
 
             }
         });
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String data = "d";
-                connectedThread.write(data.getBytes());
+                write(data.getBytes());
 
             }
         });
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String data = "i";
-                connectedThread.write(data.getBytes());
+                write(data.getBytes());
 
             }
         });
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String data = "r";
-                connectedThread.write(data.getBytes());
+                write(data.getBytes());
             }
         });
 
@@ -94,14 +93,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void empezarHiloParaConectar(BluetoothDevice device) {
         bluetoothAdapter.cancelDiscovery();
-        BluetoothSocket socket = getSocket(device);
+        socket = getSocket(device);
         connect(socket);
     }
 
     private void connect(BluetoothSocket socket) {
         try {
-            // Connect the device through the socket. This will block
-            // until it succeeds or throws an exception
             mostrarTodo();
             socket.connect();
         } catch (IOException connectException) {
@@ -110,7 +107,18 @@ public class MainActivity extends AppCompatActivity {
             try {
                 socket.close();
             } catch (IOException closeException) {
+                Toast.makeText(getApplicationContext(), "No se cerro el socket", Toast.LENGTH_LONG).show();
             }
+        }
+    }
+    
+    public void write(byte[] bytes) {
+        OutputStream tmpOut;
+        try {
+            tmpOut = socket.getOutputStream();
+            tmpOut.write(bytes);
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "No se puede obtener el output", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -123,13 +131,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public BluetoothSocket getSocket(BluetoothDevice device) {
+        BluetoothSocket socket = null;
         try {
-            // MY_UUID is the app's UUID string, also used by the server code
-            BluetoothSocket mmSocket = device.createRfcommSocketToServiceRecord(MainActivity.BTMODULEUUID);
-            return mmSocket;
+            socket = device.createRfcommSocketToServiceRecord(MainActivity.BTMODULEUUID);
         } catch (IOException e) {
-            return null;
+            Toast.makeText(getApplicationContext(), "Socket nulo, no se pudo obtenerlo", Toast.LENGTH_LONG).show();
         }
+        return socket;
     }
 
     public void mostrarTodo() {
