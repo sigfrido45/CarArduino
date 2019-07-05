@@ -1,12 +1,10 @@
 package com.upn.cararduino;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.os.Bundle;
-import android.os.Handler;
+import android.os.Bundle;;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -97,24 +95,31 @@ public class MainActivity extends AppCompatActivity {
     private void empezarHiloParaConectar(BluetoothDevice device) {
         bluetoothAdapter.cancelDiscovery();
         BluetoothSocket socket = getSocket(device);
-        boolean connected = isConnected(socket);
-        empezarHiloConectado(socket, connected);
+        connect(socket);
     }
 
-    private boolean isConnected(BluetoothSocket socket) {
-        boolean connected = true;
+    private void connect(BluetoothSocket socket) {
         try {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
+            mostrarTodo();
             socket.connect();
         } catch (IOException connectException) {
-            connected = false;
+            ocultarTodo();
+            Toast.makeText(getApplicationContext(), "No se conecto", Toast.LENGTH_LONG).show();
             try {
                 socket.close();
             } catch (IOException closeException) {
             }
         }
-        return connected;
+    }
+
+    private void ocultarTodo() {
+        lista.setVisibility(View.VISIBLE);
+        btnAvanzar.setVisibility(View.INVISIBLE);
+        btnDerecha.setVisibility(View.INVISIBLE);
+        btnIzquierda.setVisibility(View.INVISIBLE);
+        btnRetroceder.setVisibility(View.INVISIBLE);
     }
 
     public BluetoothSocket getSocket(BluetoothDevice device) {
@@ -125,13 +130,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             return null;
         }
-    }
-
-
-    public void empezarHiloConectado(BluetoothSocket socket, boolean connected) {
-        connectedThread = new ConnectedThread(socket);
-        connectedThread.run();
-        if (connected) mostrarTodo();
     }
 
     public void mostrarTodo() {
