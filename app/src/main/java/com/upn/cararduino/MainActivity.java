@@ -1,11 +1,14 @@
 package com.upn.cararduino;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,10 +18,16 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
+    private final int ADELANTE = 10;
+    private final int DERECHA = 20;
+    private final int IZQUIERDA = 30;
+    private final int ATRAS = 40;
     public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public ArrayAdapter<String> dispositivos;
     public ListView lista;
@@ -44,15 +53,19 @@ public class MainActivity extends AppCompatActivity {
         btnAvanzar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String data = "f";
-                write(data.getBytes());
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
+                startActivityForResult(intent, 10);
             }
         });
         btnDerecha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String data = "d";
-                write(data.getBytes());
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
+
             }
         });
         btnIzquierda.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +105,68 @@ public class MainActivity extends AppCompatActivity {
         bluetoothAdapter.cancelDiscovery();
         socket = getSocket(device);
         connect(socket);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && data != null) {
+            switch (requestCode) {
+                case ADELANTE: {
+                    ArrayList<String> posiblesComandos = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    //Toast.makeText(getApplicationContext(), "comando ingresado !" + asd, Toast.LENGTH_LONG).show();
+                    analizaComandoIngresado(posiblesComandos, requestCode);
+                    String comando = "f"; //mover delante
+                    write(comando.getBytes());
+                    break;
+                }
+                case DERECHA: {
+
+
+
+                    String comando = "d";
+                    write(comando.getBytes());
+                    break;
+                }
+                case IZQUIERDA: {
+                    break;
+                }
+                case ATRAS: {
+                    break;
+                }
+            }
+        } else
+            Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
+    }
+
+    private void analizaComandoIngresado(ArrayList<String> posiblesComandos, String[]) {
+        switch (requestCode) {
+            case ADELANTE: {
+                final String dataEnviar = "f";
+                final String avanza = "avanza";
+                final String avansa = "avansa";
+                final String adelante = "adelante";
+                final String forward = "forward";
+                for (String posiblePalabra : posiblesComandos) {
+                    if (posiblePalabra.equals(avansa) || posiblePalabra.equals(adelante) || posiblePalabra.equals(forward)
+                            || posiblePalabra.equals(avanza))
+                        write(dataEnviar.getBytes());
+                    break;
+                }
+                break;
+            }
+            case DERECHA: {
+
+
+                break;
+            }
+            case IZQUIERDA: {
+                break;
+            }
+            case ATRAS: {
+                break;
+            }
+        }
     }
 
     private void connect(BluetoothSocket socket) {
