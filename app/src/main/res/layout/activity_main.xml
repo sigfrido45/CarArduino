@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/txt_titulo_dispositivos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="100dp"
@@ -23,31 +24,10 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/idBtnIzquierda"
-            android:layout_width="wrap_content"
+            android:id="@+id/btn_habla_perro"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Izquierda"
-            android:visibility="invisible" />
-
-        <Button
-            android:id="@+id/idBtnDerecha"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Derecha"
-            android:visibility="invisible" />
-
-        <Button
-            android:id="@+id/idBtnAvanzar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Avanzar"
-            android:visibility="invisible" />
-
-        <Button
-            android:id="@+id/idBtnRetroceder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Retroceder"
+            android:text="Habla perro"
             android:visibility="invisible" />
     </LinearLayout>
 

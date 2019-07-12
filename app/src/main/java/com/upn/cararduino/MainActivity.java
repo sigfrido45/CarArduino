@@ -14,30 +14,39 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
-    private final int ADELANTE = 10;
-    private final int DERECHA = 20;
-    private final int IZQUIERDA = 30;
-    private final int ATRAS = 40;
+    private final String ADELANTE = "f";
+    private final String DERECHA = "d";
+    private final String IZQUIERDA = "i";
+    private final String ATRAS = "r";
+    private final int CODE = 50;
+
     public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public ArrayAdapter<String> dispositivos;
     public ListView lista;
     public static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    private Button btnAvanzar;
-    private Button btnRetroceder;
-    private Button btnIzquierda;
-    private Button btnDerecha;
     private BluetoothSocket socket;
+    private TextView txtViewDispositivos;
+    private Button btnHablaPerro;
+
+    final String[] posiblesPalabrasAdelante = {"avanza", "abanza", "avansa", "forward", "adelanteperro"};
+    final String[] posiblesPalabrasDerecha = {"derecha", "right", "derhecha", "derechaperro"};
+    final String[] posiblesPalabrasIzquierda = {"izquierda", "isquierda", "izquerda", "izquierdaperro", "left"};
+    final String[] posiblesPalabrasAtras = {"atras", "atrás", "retrocede", "retrocedeperro", "back"};
+    private ArrayList<String[]> posiblesPalabras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,45 +54,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         dispositivos = new ArrayAdapter<>(this, R.layout.nombre_dispositivos);
         lista = findViewById(R.id.lista_dispositivos);
-        btnAvanzar = findViewById(R.id.idBtnAvanzar);
-        btnRetroceder = findViewById(R.id.idBtnRetroceder);
-        btnIzquierda = findViewById(R.id.idBtnIzquierda);
-        btnDerecha = findViewById(R.id.idBtnDerecha);
+        txtViewDispositivos = findViewById(R.id.txt_titulo_dispositivos);
+        btnHablaPerro = findViewById(R.id.btn_habla_perro);
+        setPalabras();
 
-        btnAvanzar.setOnClickListener(new View.OnClickListener() {
+        btnHablaPerro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
-                startActivityForResult(intent, ADELANTE);
-            }
-        });
-        btnDerecha.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
-                startActivityForResult(intent, DERECHA);
-            }
-        });
-        btnIzquierda.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
-                startActivityForResult(intent, IZQUIERDA);
-            }
-        });
-        btnRetroceder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
-                startActivityForResult(intent, ATRAS);
+                startActivityForResult(intent, CODE);
             }
         });
 
@@ -105,6 +86,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setPalabras() {
+        posiblesPalabras = new ArrayList<>();
+        posiblesPalabras.add(posiblesPalabrasAdelante);
+        posiblesPalabras.add(posiblesPalabrasDerecha);
+        posiblesPalabras.add(posiblesPalabrasIzquierda);
+        posiblesPalabras.add(posiblesPalabrasAtras);
+    }
+
     private void empezarHiloParaConectar(BluetoothDevice device) {
         bluetoothAdapter.cancelDiscovery();
         socket = getSocket(device);
@@ -116,61 +105,45 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
-                case ADELANTE: {
-                    final String[] posiblesPalabras = {"avanza", "abanza", "avansa", "forward", "adelante perro"};
+                case CODE: {
                     ArrayList<String> posiblesComandos = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String comando = "f";
-                    if (esPalabraCorrecta(posiblesComandos, posiblesPalabras))
-                        write(comando.getBytes());
+                    String palabra = getPalabraCorrecta(posiblesComandos);
+                    if (!palabra.isEmpty())
+                        enviarDatoCorrecto(palabra);
                     else
                         Toast.makeText(getApplicationContext(), "No se encontro coincidencias", Toast.LENGTH_LONG).show();
                     break;
                 }
-                case DERECHA: {
-                    final String[] posiblesPalabras = {"derecha", "right", "derhecha", "derecha perro"};
-                    ArrayList<String> posiblesComandos = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String comando = "d";
-                    if (esPalabraCorrecta(posiblesComandos, posiblesPalabras))
-                        write(comando.getBytes());
-                    else
-                        Toast.makeText(getApplicationContext(), "No se encontro coincidencias", Toast.LENGTH_LONG).show();
+                default:
+                    Toast.makeText(getApplicationContext(), "el codigo del intent es incorrecto", Toast.LENGTH_LONG).show();
                     break;
-                }
-                case IZQUIERDA: {
-                    String comando = "i";
-                    final String[] posiblesPalabras = {"izquierda", "isquierda", "izquerda", "izquierda perro"};
-                    ArrayList<String> posiblesComandos = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    if (esPalabraCorrecta(posiblesComandos, posiblesPalabras))
-                        write(comando.getBytes());
-                    else
-                        Toast.makeText(getApplicationContext(), "No se encontro coincidencias", Toast.LENGTH_LONG).show();
-                    break;
-                }
-                case ATRAS: {
-                    String comando = "r";
-                    final String[] posiblesPalabras = {"atras", "atrás", "retrocede", "retrocede perro"};
-                    ArrayList<String> posiblesComandos = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    if (esPalabraCorrecta(posiblesComandos, posiblesPalabras))
-                        write(comando.getBytes());
-                    else
-                        Toast.makeText(getApplicationContext(), "No se encontro coincidencias", Toast.LENGTH_LONG).show();
-                    break;
-                }
             }
         } else
             Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
     }
 
-    private boolean esPalabraCorrecta(ArrayList<String> posiblesComandos, String[] posiblesPalabras) {
-        boolean esCorrecto = false;
-        for (int i = 0; i < posiblesComandos.size(); i++) {
-            for (int j = 0; j < posiblesPalabras.length; j++)
-                if (posiblesComandos.get(i).trim().equals(posiblesPalabras[j].trim())) {
-                    esCorrecto = true;
-                    break;
+    private void enviarDatoCorrecto(String palabra) {
+        if (Arrays.asList(posiblesPalabrasAdelante).contains(palabra))
+            write(ADELANTE.getBytes());
+        if (Arrays.asList(posiblesPalabrasAtras).contains(palabra))
+            write(ATRAS.getBytes());
+        if (Arrays.asList(posiblesPalabrasDerecha).contains(palabra))
+            write(DERECHA.getBytes());
+        if (Arrays.asList(posiblesPalabrasIzquierda).contains(palabra))
+            write(IZQUIERDA.getBytes());
+    }
+
+    private String getPalabraCorrecta(ArrayList<String> posiblesComandos) {
+        Toast.makeText(getApplicationContext(), "words " + posiblesComandos, Toast.LENGTH_LONG).show();
+        for (String[] palabras : posiblesPalabras) {
+            List<String> lista = Arrays.asList(palabras);
+            for (String comando : posiblesComandos) {
+                if (lista.contains(comando.trim())) {
+                    return comando.trim();
                 }
+            }
         }
-        return esCorrecto;
+        return "";
     }
 
     private void connect(BluetoothSocket socket) {
@@ -200,10 +173,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void ocultarTodo() {
         lista.setVisibility(View.VISIBLE);
-        btnAvanzar.setVisibility(View.INVISIBLE);
-        btnDerecha.setVisibility(View.INVISIBLE);
-        btnIzquierda.setVisibility(View.INVISIBLE);
-        btnRetroceder.setVisibility(View.INVISIBLE);
+        txtViewDispositivos.setVisibility(View.INVISIBLE);
+        btnHablaPerro.setVisibility(View.INVISIBLE);
     }
 
     public BluetoothSocket getSocket(BluetoothDevice device) {
@@ -218,9 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void mostrarTodo() {
         lista.setVisibility(View.INVISIBLE);
-        btnAvanzar.setVisibility(View.VISIBLE);
-        btnDerecha.setVisibility(View.VISIBLE);
-        btnIzquierda.setVisibility(View.VISIBLE);
-        btnRetroceder.setVisibility(View.VISIBLE);
+        txtViewDispositivos.setVisibility(View.VISIBLE);
+        btnHablaPerro.setVisibility(View.VISIBLE);
     }
 }
