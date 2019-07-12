@@ -1,6 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/new_rectangle">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-</TextView>
+            <ImageView
+                android:id="@+id/img_caratula_item_playlist"
+                android:layout_width="68dp"
+                android:layout_height="96dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/bluetooth" />
+            <LinearLayout
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="15dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/nombre"
+                    android:layout_height="wrap_content"
+                    android:text="Nombre de Dispositivo :"
+                    android:textColor="#000"
+                    android:fontFamily="casual"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:id="@+id/mac"
+                    android:textColor="#000"
+                    android:layout_marginTop="20dp"
+                    android:text="Nombre de Mac :"
+                    android:fontFamily="casual"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
