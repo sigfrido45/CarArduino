@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".BienvenidaA">
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:id="@+id/logo"
+        android:src="@drawable/car_movil_logo"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bienvenido a Movil Car"
+
+        android:textSize="30dp"
+
+        android:textColor="#fff"
+
+        android:fontFamily="sans-serif-light"
+        />
+</LinearLayout>

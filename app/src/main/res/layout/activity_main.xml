@@ -19,17 +19,6 @@
         android:layout_height="match_parent"
         android:visibility="visible" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/btn_habla_perro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Habla perro"
-            android:visibility="invisible" />
-    </LinearLayout>
 
 
 </RelativeLayout>
