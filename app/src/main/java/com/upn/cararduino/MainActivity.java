@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private final String IZQUIERDA = "i";
     private final String ATRAS = "r";
     private final int CODE = 50;
+    private final String SUBIR_CUCHILLAS = "s";
+    private final String BAJAR_CUCHILLAS = "b";
+
 
     public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public ArrayAdapter<String> dispositivos;
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothSocket socket;
     private TextView txtViewDispositivos;
     private Button btnHablaPerro;
+    private Button btnSubirCuchillas;
+    private Button btnBajarCuchillas;
 
     final String[] posiblesPalabrasAdelante = {"avanza", "abanza", "avansa", "forward", "adelanteperro"};
     final String[] posiblesPalabrasDerecha = {"derecha", "right", "derhecha", "derechaperro"};
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         lista = findViewById(R.id.lista_dispositivos);
         txtViewDispositivos = findViewById(R.id.txt_titulo_dispositivos);
         btnHablaPerro = findViewById(R.id.btn_habla_perro);
+        btnBajarCuchillas = findViewById(R.id.btn_bajar_cuchillas);
+        btnSubirCuchillas = findViewById(R.id.btn_subir_cuchillas);
         setPalabras();
 
         btnHablaPerro.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +72,20 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
                 startActivityForResult(intent, CODE);
+            }
+        });
+
+        btnSubirCuchillas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                subeOBajaCuchillas(SUBIR_CUCHILLAS);
+            }
+        });
+
+        btnBajarCuchillas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                subeOBajaCuchillas(BAJAR_CUCHILLAS);
             }
         });
 
@@ -133,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
             write(IZQUIERDA.getBytes());
     }
 
+    private void subeOBajaCuchillas(String caracter) {
+        write(caracter.getBytes());
+    }
+
     private String getPalabraCorrecta(ArrayList<String> posiblesComandos) {
         Toast.makeText(getApplicationContext(), "words " + posiblesComandos, Toast.LENGTH_LONG).show();
         for (String[] palabras : posiblesPalabras) {
@@ -175,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
         lista.setVisibility(View.VISIBLE);
         txtViewDispositivos.setVisibility(View.INVISIBLE);
         btnHablaPerro.setVisibility(View.INVISIBLE);
+        btnSubirCuchillas.setVisibility(View.INVISIBLE);
+        btnBajarCuchillas.setVisibility(View.INVISIBLE);
     }
 
     public BluetoothSocket getSocket(BluetoothDevice device) {
@@ -191,5 +218,7 @@ public class MainActivity extends AppCompatActivity {
         lista.setVisibility(View.INVISIBLE);
         txtViewDispositivos.setVisibility(View.VISIBLE);
         btnHablaPerro.setVisibility(View.VISIBLE);
+        btnSubirCuchillas.setVisibility(View.VISIBLE);
+        btnBajarCuchillas.setVisibility(View.VISIBLE);
     }
 }
