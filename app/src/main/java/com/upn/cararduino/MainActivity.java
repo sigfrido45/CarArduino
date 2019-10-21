@@ -7,12 +7,18 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +52,12 @@ public class MainActivity extends AppCompatActivity {
     private Button btnHablaPerro;
     private Button btnSubirCuchillas;
     private Button btnBajarCuchillas;
-
+    private Button avanzar;
+    private Button retroceder;
+    private Button izquierda;
+    private Button derecha;
+    private LinearLayout view_botones;
+    private boolean ispresionado=false;
     final String[] posiblesPalabrasAdelante = {"avanza", "abanza", "avansa", "forward", "adelanteperro"};
     final String[] posiblesPalabrasDerecha = {"derecha", "right", "derhecha", "derechaperro"};
     final String[] posiblesPalabrasIzquierda = {"izquierda", "isquierda", "izquerda", "izquierdaperro", "left"};
@@ -57,13 +68,105 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        view_botones=findViewById(R.id.view_botones);
         dispositivos = new ArrayAdapter<>(this, R.layout.nombre_dispositivos);
         lista = findViewById(R.id.lista_dispositivos);
         txtViewDispositivos = findViewById(R.id.txt_titulo_dispositivos);
         btnHablaPerro = findViewById(R.id.btn_habla_perro);
         btnBajarCuchillas = findViewById(R.id.btn_bajar_cuchillas);
         btnSubirCuchillas = findViewById(R.id.btn_subir_cuchillas);
+        avanzar= (Button) findViewById(R.id.btn_avanzar);
+        izquierda=findViewById(R.id.btn_izquierda);
+        derecha=findViewById(R.id.btn_derecha);
+        retroceder=findViewById(R.id.btn_retroceder);
+        ocultarTodo();
         setPalabras();
+
+        avanzar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (!ispresionado) {
+                            ispresionado = true;
+                            avanzar.setBackgroundColor(Color.parseColor("#C4FBA2"));
+                            Toast.makeText(getApplicationContext(), "Esta siendo Presionado",Toast.LENGTH_SHORT).show();
+                            new AsyncTaskCounter().execute();
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        ispresionado = false;
+                        avanzar.setBackgroundColor(Color.GRAY);
+                        Toast.makeText(getApplicationContext(), "Detiene contador",Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return true;
+            }
+        });
+        retroceder.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (!ispresionado) {
+                            ispresionado = true;
+                            retroceder.setBackgroundColor(Color.parseColor("#C4FBA2"));
+                            Toast.makeText(getApplicationContext(), "Esta siendo Presionado",Toast.LENGTH_SHORT).show();
+                            new AsyncTaskCounter().execute();
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        ispresionado = false;
+                        retroceder.setBackgroundColor(Color.GRAY);
+                        Toast.makeText(getApplicationContext(), "Detiene contador",Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return true;
+            }
+        });
+        izquierda.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (!ispresionado) {
+                            ispresionado = true;
+                            izquierda.setBackgroundColor(Color.parseColor("#C4FBA2"));
+                            Toast.makeText(getApplicationContext(), "Esta siendo Presionado",Toast.LENGTH_SHORT).show();
+                            new AsyncTaskCounter().execute();
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        ispresionado = false;
+                        izquierda.setBackgroundColor(Color.GRAY);
+                        Toast.makeText(getApplicationContext(), "Detiene contador",Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return true;
+            }
+        });
+        derecha.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (!ispresionado) {
+                            ispresionado = true;
+                            derecha.setBackgroundColor(Color.parseColor("#C4FBA2"));
+                            Toast.makeText(getApplicationContext(), "Esta siendo Presionado",Toast.LENGTH_SHORT).show();
+                            new AsyncTaskCounter().execute();
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        ispresionado = false;
+                        derecha.setBackgroundColor(Color.GRAY);
+                        Toast.makeText(getApplicationContext(), "Detiene contador",Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return true;
+            }
+        });
 
         btnHablaPerro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +223,28 @@ public class MainActivity extends AppCompatActivity {
         socket = getSocket(device);
         connect(socket);
     }
+    private class AsyncTaskCounter extends AsyncTask<Void, Void, Void> {
 
+        int contador = 0;
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            while(ispresionado) {
+                taskIncrementaContador();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Log.d("ERROR", e.getMessage());
+                }
+            }
+            return null;
+        }
+
+        private void taskIncrementaContador(){
+            contador++;
+            Log.d("CONTADOR", "Valor: " + String.valueOf(contador));        }
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -176,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
             mostrarTodo();
             socket.connect();
         } catch (IOException connectException) {
-            ocultarTodo();
             Toast.makeText(getApplicationContext(), "No se conecto", Toast.LENGTH_LONG).show();
             try {
                 socket.close();
@@ -198,10 +321,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void ocultarTodo() {
         lista.setVisibility(View.VISIBLE);
-        txtViewDispositivos.setVisibility(View.INVISIBLE);
-        btnHablaPerro.setVisibility(View.INVISIBLE);
-        btnSubirCuchillas.setVisibility(View.INVISIBLE);
-        btnBajarCuchillas.setVisibility(View.INVISIBLE);
+        txtViewDispositivos.setVisibility(View.VISIBLE);
+        view_botones.setVisibility(View.INVISIBLE);
     }
 
     public BluetoothSocket getSocket(BluetoothDevice device) {
@@ -216,9 +337,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void mostrarTodo() {
         lista.setVisibility(View.INVISIBLE);
-        txtViewDispositivos.setVisibility(View.VISIBLE);
-        btnHablaPerro.setVisibility(View.VISIBLE);
-        btnSubirCuchillas.setVisibility(View.VISIBLE);
-        btnBajarCuchillas.setVisibility(View.VISIBLE);
+        txtViewDispositivos.setVisibility(View.INVISIBLE);
+        view_botones.setVisibility(View.VISIBLE);
     }
 }
