@@ -300,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
             mostrarTodo();
             socket.connect();
         } catch (IOException connectException) {
+            ocultarTodo();
             Toast.makeText(getApplicationContext(), "No se conecto", Toast.LENGTH_LONG).show();
             try {
                 socket.close();
